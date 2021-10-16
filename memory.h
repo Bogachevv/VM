@@ -3,19 +3,19 @@
 
 struct memory
 {
-	byte_t stack_ptr;
-	byte_t heap_ptr;
-	byte_t static_ptr;
-	byte_t execute_ptr;
+	word_t stack_ptr;
+	word_t heap_ptr;
+	word_t static_ptr;
+	word_t execute_ptr;
 	heap mem;
 	stack _stack;
-	registers<words::BYTE> registers_list;
+	registers<words::WORD> registers_list;
 
 
-	memory(byte_t stack_size, byte_t heap_size,
-		byte_t static_size, byte_t execute_size);
+	memory(word_t stack_size, word_t heap_size,
+		word_t static_size, word_t execute_size);
 
 
-	byte_t* operator[](byte_t ptr);
+	byte_t* operator[](word_t ptr);
 
 };

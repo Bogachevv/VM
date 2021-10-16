@@ -29,7 +29,7 @@ struct instruction
 	byte_t flags; 
 	// is_left_ptr = flags & 2
 	// is_right_ptr = flags & 1
-	byte_t left, right;
+	word_t left, right;
 };
 
 struct exec_ud //executor unit descriptor

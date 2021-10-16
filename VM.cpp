@@ -1,7 +1,4 @@
 ﻿#include "VM.h"
-#include "memory_model.h"
-#include "instructions.h"
-#include "memory.h"
 
 using namespace std;
 
@@ -34,9 +31,14 @@ int main()
 	*shell.mem[shell.mem.static_ptr] = 13;
 	shell.push_cmd({ instructions::MOV, false*2 + true, 0, shell.mem.static_ptr });
 	shell.push_cmd({ instructions::ADD, false*2 + false,0, 1 });
+	shell.push_cmd({ instructions::PUSH, false * 2 + false,0, 0 });
+	shell.push_cmd({ instructions::POP, false * 2 + false,3, 0 });
 	shell.exec_next();
 	shell.exec_next();
-	cout << "Result: " << (int)shell.mem.registers_list[register_name::A].val << endl;
+	shell.exec_next();
+	shell.exec_next();
+	cout << "Result: " << (int)shell.mem.registers_list[register_name::D].val << endl;
+	word_t stack_last;
 
 	return 0;
 }

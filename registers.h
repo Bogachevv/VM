@@ -66,51 +66,6 @@ struct register_val
 
 };
 
-//template<>
-//struct register_val<words::BYTE>
-//{
-//	decltype(word_type_check<words::BYTE>::result) val;
-//
-//	void operator=(byte_t value);
-//};
-
-//byte_t operator+(register_val<words::BYTE>, byte_t);
-//
-//byte_t operator+(register_val<words::BYTE>, register_val<words::BYTE>);
-//
-//byte_t operator-(register_val<words::BYTE>, byte_t);
-//
-//byte_t operator-(register_val<words::BYTE>, register_val<words::BYTE>);
-
-
-//template<>
-//struct register_val<words::WORD>
-//{
-//	word_t val;
-//
-//	void operator=(word_t value);
-//};
-//
-//template<>
-//struct register_val<words::DWORD>
-//{
-//	// TODO: make compile time architecture check
-//	// WARNING: this code works only with amd_x64
-//
-//
-//
-//};
-//
-//template<>
-//struct register_val<words::QWORD>
-//{
-//	// TODO: make compile time architecture check
-//	// WARNING: this code works only with amd_x64
-//
-//
-//
-//};
-
 template <words w_type>
 struct registers
 {

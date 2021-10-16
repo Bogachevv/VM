@@ -16,19 +16,19 @@ enum class instructions:byte_t
 	JMPE = 7,   //jump if equal
 	JMPGT = 8,  //jump if greater then
 	JMPLT = 9,  //jump if less then
-	JMPGE = 10, //jump if reater equals
+	JMPGE = 10, //jump if greater equals
 	JMPLE = 11, //jump if less equals
 	PUSH = 12,  //push data to stack
 	POP = 13,   //pop data from stack
-
+	NUL = 14,
 };
 
 struct instruction
 {
 	instructions type;
-	byte_t flags; 
 	// is_left_ptr = flags & 2
 	// is_right_ptr = flags & 1
+	byte_t flags; 
 	word_t left, right;
 };
 

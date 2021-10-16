@@ -8,6 +8,10 @@ namespace executors {
 	// dst could be register or memory ptr
 	// src could be register or memory ptr
 
+	void null_exec(instruction cmd, memory& mem) {
+
+	}
+
 	void move(register_name dst, register_name src, registers<words::WORD>& register_list);
 	void move(register_name dst, byte_t* src, registers<words::WORD>& register_list);
 	void move(byte_t* dst, register_name src, registers<words::WORD>& register_list);
@@ -138,6 +142,115 @@ namespace executors {
 		mem.registers_list[dst].val = val;
 	}
 
+	// cmp: cmp left right -> compearing left and right; result in FL register
+	// left could be register or memory ptr
+	// right could be register or memory ptr
+
+	void cmp(register_name left, register_name right, registers<words::WORD>& register_list);
+	void cmp(register_name left, byte_t* right, registers<words::WORD>& register_list);
+	void cmp(byte_t* left, register_name right, registers<words::WORD>& register_list);
+
+	void cmp(instruction cmd, memory& mem) {
+		bool is_left_ptr = cmd.flags & 2;
+		bool is_right_ptr = cmd.flags & 1;
+		std::cout << "Executing command cmp: (" << (int)cmd.type << ", " << is_left_ptr << ", "
+			<< is_right_ptr << ", " << (int)cmd.left << ", " << (int)cmd.right << ");" << std::endl;
+
+		if (is_left_ptr) {
+			cmp((mem.mem.begin_ptr + cmd.left), (register_name)cmd.right, mem.registers_list);
+		}
+		else if (is_right_ptr) {
+			cmp((register_name)cmd.left, (mem.mem.begin_ptr + cmd.right), mem.registers_list);
+		}
+		else {
+			cmp((register_name)cmd.left, (register_name)cmd.right, mem.registers_list);
+		}
+
+	}
+
+	void cmp(register_name left, register_name right, registers<words::WORD>& register_list) {
+		word_t left_val = register_list[left].val;
+		word_t right_val = register_list[right].val;
+		if (left_val == right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 1;
+		}
+		if (left_val < right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 2;
+		}
+		if (left_val > right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 4;
+		}
+	}
+
+	void cmp(register_name left, byte_t* right, registers<words::WORD>& register_list) {
+		word_t left_val = register_list[left].val;
+		word_t right_val = *right;
+		if (left_val == right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 1;
+		}
+		if (left_val < right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 2;
+		}
+		if (left_val > right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 4;
+		}
+	}
+
+	void cmp(byte_t* left, register_name right, registers<words::WORD>& register_list) {
+		word_t left_val = *left;
+		word_t right_val = register_list[right].val;
+		if (left_val == right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 1;
+		}
+		if (left_val < right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 2;
+		}
+		if (left_val > right_val) {
+			register_list[register_name::FL].val = register_list[register_name::FL].val | 4;
+		}
+	}
+
+	// jmp: jmp label -> jumping to label
+	// label could be register
+
+	void jmp(register_name dst, registers<words::WORD>& register_list);
+
+	void jmp(instruction cmd, memory& mem) {
+		bool is_left_ptr = cmd.flags & 2;
+		bool is_right_ptr = cmd.flags & 1;
+		std::cout << "Executing command jmp: (" << (int)cmd.type << ", " << is_left_ptr << ", "
+			<< is_right_ptr << ", " << (int)cmd.left << ", " << (int)cmd.right << ");" << std::endl;
+
+		jmp((register_name)cmd.left, mem.registers_list);
+
+	}
+
+	void jmp(register_name dst, registers<words::WORD>& register_list) {
+		register_list[register_name::IP].val = register_list[dst].val;
+	}
+
+	// jmpe: jmpe label -> jumping to label if equals flag raised
+	// label could be register
+
+	void jmpe(register_name dst, registers<words::WORD>& register_list);
+
+	void jmpe(instruction cmd, memory& mem) {
+		bool is_left_ptr = cmd.flags & 2;
+		bool is_right_ptr = cmd.flags & 1;
+		std::cout << "Executing command jmpe: (" << (int)cmd.type << ", " << is_left_ptr << ", "
+			<< is_right_ptr << ", " << (int)cmd.left << ", " << (int)cmd.right << ");" << std::endl;
+
+		jmpe((register_name)cmd.left, mem.registers_list);
+
+	}
+
+	void jmpe(register_name dst , registers<words::WORD>& register_list) {
+		if (register_list[register_name::FL].val && 1) {
+			word_t new_ip = register_list[dst].val;
+			register_list[register_name::IP].val = new_ip;
+		}
+	}
+
 }
 
 
@@ -146,8 +259,16 @@ executing_shell::executing_shell():last_cmd_ptr(0), mem(1024, 4096, 1024, 1024) 
 	commands_list[1] =  { 1,  &executors::move, 2};
 	commands_list[2] =  { 2,  &executors::add, 2 };
 	commands_list[3] =  { 3,  &executors::sub, 2 };
+	commands_list[5] =  { 5,  &executors::cmp, 2 };
+	commands_list[6] =  { 6,  &executors::jmp, 1 };
+	commands_list[7] =  { 7,  &executors::jmpe, 1 };
+	//commands_list[8] =  { 8,  &executors::jmp, 1 };
+	//commands_list[9] =  { 9,  &executors::jmp, 1 };
+	//commands_list[10] = { 10,  &executors::jmp, 1 };
+	//commands_list[11] = { 11,  &executors::jmp, 1 };
 	commands_list[12] = { 12, &executors::push, 1 };
 	commands_list[13] = { 13, &executors::pop, 1 };
+	commands_list[14] = { 14, &executors::null_exec, 1 };
 	programm = (instruction*)mem[0];
 
 }

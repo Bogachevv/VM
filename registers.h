@@ -10,6 +10,9 @@ enum register_name {
 	SP = 5,
 	IP = 6,
 	BP = 7,
+	// equals = FL & 1
+	// less = FL & 2
+	// greater = FL & 4 
 	FL = 8,
 };
 

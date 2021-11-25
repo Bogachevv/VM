@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include "instructions.h"
+#include "instructions/instructions.h"
 #include "memory.h"
 
 // TODO: установите здесь ссылки на дополнительные заголовки, требующиеся для программы.
